@@ -15,3 +15,13 @@ struct BBQuotes18App: App {
         }
     }
 }
+
+/**
+ Version 2 Feature List:
+ - ✅ Add El Camino Tab
+ - ✅ Utilize all images on Characterview
+ - ✅ On character view, auto scroll if the status is shown
+ - ✅ Fetch episode data
+ - ✅  Extend string to get rod of long image and color name
+ - Create static constants to show names
+ */

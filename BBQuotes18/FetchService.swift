@@ -61,5 +61,43 @@ struct FetchService {
         }
         return nil
     }
+    
+    func fetchEpisode(of show: String) async throws -> Episode? {
+        let episodeUrl = baseUrl.appending(path: "episodes")
+        let fetchUrl = episodeUrl.appending(queryItems: [URLQueryItem(name: "production", value: show)])
+        let (data, response) = try await URLSession.shared.data(from: fetchUrl)
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw FetchError.badResponse
+        }
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        let episodes = try decoder.decode([Episode].self, from: data)
+        return episodes.randomElement()
+    }
+    
+    func fetchRandomCharacter(for show: String) async throws -> Character? {
+        let randomCharacterUrl = baseUrl.appending(path: "characters/random")
+        let (data, response) = try await URLSession.shared.data(from: randomCharacterUrl)
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw FetchError.badResponse
+        }
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        let character = try decoder.decode(Character.self, from: data)
+        return character
+    }
+    
+    func fetchRandomQuote(by character: String) async throws -> String {
+        let randomQuoteUrl = baseUrl.appending(path: "quotes/random")
+        let fetchUrl = randomQuoteUrl.appending(queryItems: [URLQueryItem(name: "character", value: character.replaceSpaceByPlus())])
+        let (data, response) = try await URLSession.shared.data(from: fetchUrl)
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw FetchError.badResponse
+        }
+        let quote = try JSONDecoder().decode(Quote.self, from: data)
+        return quote.quote
+    }
 }
 

@@ -15,6 +15,9 @@ struct Character: Decodable{
     let status: String
     let portrayedBy: String
     var death: Death?
+    var productions: [String]
+    var randomQuote: String
+    
     
     enum CodingKeys: CodingKey {
         case name
@@ -24,6 +27,7 @@ struct Character: Decodable{
         case aliases
         case status
         case portrayedBy
+        case productions
     }
     
     init(from decoder: any Decoder) throws {
@@ -39,5 +43,7 @@ struct Character: Decodable{
         deathDecoder.keyDecodingStrategy = .convertFromSnakeCase
         let deathData = try Data(contentsOf: Bundle.main.url(forResource: "sampledeath", withExtension: "json")!)
         self.death = try deathDecoder.decode(Death.self, from: deathData)
+        self.productions = try container.decode([String].self, forKey: .productions)
+        self.randomQuote = "Let's break it down."
     }
 }
