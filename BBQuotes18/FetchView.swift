@@ -30,7 +30,7 @@ struct FetchView: View {
                             QuoteView(vm: vm, scHeight: geo.size.height, scWidth: geo.size.width)
                                 .frame(width: geo.size.width * 0.9, height: geo.size.height * 0.65)
                                 .onTapGesture {
-                                    showCharacterSheet.toggle()
+                                    if !vm.isQuoteSimpsons{ showCharacterSheet.toggle() }
                                 }
                         case .successEpisode:
                             EpisodeView(episode: vm.episode)

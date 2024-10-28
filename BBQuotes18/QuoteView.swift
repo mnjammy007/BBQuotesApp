@@ -14,7 +14,7 @@ struct QuoteView: View {
     
     var body: some View {
         VStack {
-            Text("\"\(vm.quote.quote)\"")
+            Text("\"\(vm.isQuoteSimpsons ? vm.simpsonsQuote.quote : vm.quote.quote)\"")
                 .minimumScaleFactor(0.5)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white)
@@ -23,7 +23,7 @@ struct QuoteView: View {
                 .clipShape(.rect(cornerRadius: 25))
                 .padding(.horizontal)
             ZStack(alignment: .bottom) {
-                AsyncImage(url: vm.character.images.randomElement()) { image in
+                AsyncImage(url: vm.isQuoteSimpsons ? vm.simpsonsQuote.image : vm.character.images.randomElement()) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -31,7 +31,7 @@ struct QuoteView: View {
                     ProgressView()
                 }
                 .frame(width: scWidth * 0.9, height: scHeight * 0.55)
-                Text(vm.quote.character)
+                Text(vm.isQuoteSimpsons ? vm.simpsonsQuote.character : vm.quote.character)
                     .foregroundStyle(.white)
                     .padding(10)
                     .frame(maxWidth: .infinity)

@@ -12,6 +12,7 @@ struct CharacterView: View {
     let character: Character
     let show: String
     let isViewingOnFetchView: Bool
+    @State private var rotationAngle = 0.0
     
     var body: some View {
         GeometryReader{ geo in
@@ -24,21 +25,24 @@ struct CharacterView: View {
                         HStack{
                             switch vm.randomQuoteStatus {
                             case .notTried, .success:
-                                Text("\(character.randomQuote)")
+                                Text("\(vm.character.randomQuote)")
                             case .failed(let error):
                                 Text(error.localizedDescription)
                             }
                             Button("↻"){
                                 Task{
+                                    withAnimation(.easeInOut(duration: 0.5)) {rotationAngle += 360}
                                     await vm.getRandomQuote(by: character)
                                 }
                             }
+                            .rotationEffect(.degrees(rotationAngle))
                             .font(.title2)
                         }
                         .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .background(isViewingOnFetchView ? .black.opacity(0.6) : .clear)
-                        .clipShape(.rect(cornerRadius: 15))
+                        .padding([.horizontal,.vertical])
+                        .background(.black.opacity(0.6))
+                        .clipShape(.rect(cornerRadius: 25))
+                        .frame(width: geo.size.width * 0.8, alignment: .center)
                         .padding(.top, geo.size.height * 0.07)
                         
                         TabView {
@@ -115,7 +119,6 @@ struct CharacterView: View {
                         .padding(.all, 10)
                         .background(isViewingOnFetchView ? .black.opacity(0.6) : .clear)
                         .clipShape(.rect(cornerRadius: isViewingOnFetchView ? 25 : 0))
-                        
                         .frame(width: geo.size.width * 0.8, alignment: .leading)
                         .padding(.bottom, 50)
                         .id(1)

@@ -25,31 +25,47 @@ class ViewModel {
     }
     private(set) var status: DataFetchStatus = .notStarted
     private(set) var randomQuoteStatus: QuoteFetchStatus = .notTried
+    private(set) var isQuoteSimpsons: Bool = false
     
     let dataFetcher = FetchService()
     var quote: Quote
+    var simpsonsQuote: SimpsonsQuote
     var character: Character
     var episode: Episode
     
     init() {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
         let quoteData = try! Data(contentsOf: Bundle.main.url(forResource: "samplequote", withExtension: "json")!)
         quote = try! decoder.decode(Quote.self, from: quoteData)
+        
         let characterData = try! Data(contentsOf: Bundle.main.url(forResource: "samplecharacter", withExtension: "json")!)
         character = try! decoder.decode(Character.self, from: characterData)
         
         let episodeData = try! Data(contentsOf: Bundle.main.url(forResource: "sampleepisode", withExtension: "json")!)
         episode = try! decoder.decode(Episode.self, from: episodeData)
+        
+        let simpsonsQuoteData = try! Data(contentsOf: Bundle.main.url(forResource: "samplesimpsonsquote", withExtension: "json")!)
+        simpsonsQuote = try! decoder.decode(SimpsonsQuote.self, from: simpsonsQuoteData)
     }
     
     func getQuoteData(for show: String) async {
         status = .fetching
         do {
-            quote = try await dataFetcher.fetchQuote(from: show)
-            character = try await dataFetcher.fetchCharacter(quote.character)
-            character.death = try await dataFetcher.fetchDeath(for: character.name)
-            character.randomQuote = try await dataFetcher.fetchRandomQuote(by: character.name)
+            let randomNumber = Int.random(in: 1...100)
+            if randomNumber <= 80 {
+                quote = try await dataFetcher.fetchQuote(from: show)
+                character = try await dataFetcher.fetchCharacter(quote.character)
+                character.death = try await dataFetcher.fetchDeath(for: character.name)
+                character.randomQuote = try await dataFetcher.fetchRandomQuote(by: character.name)
+                isQuoteSimpsons = false
+            }
+            else {
+                simpsonsQuote = try await dataFetcher.fetchSimpsonsQuote()
+                isQuoteSimpsons = true
+            }
+            
             status = .successQuote
         }
         catch {
